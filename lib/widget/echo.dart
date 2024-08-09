@@ -21,21 +21,21 @@ class Echo extends StatelessWidget {
   }
 }
 
-// class ContextRoute extends StatelessWidget {
-//   const ContextRoute({super.key});
+class ContextRoute extends StatelessWidget {
+  const ContextRoute({super.key});
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text("Context测试"),
-//       ),
-//       body: Builder(builder: (context) {
-//         Scaffold? scaffold = context.findAncestorWidgetOfExactType<Scaffold>();
-//         return (scaffold!.appBar as AppBar).title;
-//       }),
-//     );
-//   }
-// }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Context测试"),
+      ),
+      body: Builder(builder: (context) {
+        ScaffoldState scaffoldState = Scaffold.of(context);
+        return scaffoldState.widget;
+      }),
+    );
+  }
+}
 
 

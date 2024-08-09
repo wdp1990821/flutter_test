@@ -1,3 +1,4 @@
+import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -31,7 +32,16 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      initialRoute: '/', // 名为'/'的路由作为应用的首页
+      routes: {
+        '/': (context) => const MyHomePage(title: 'Flutter Demo Home Page'),
+        'new_page': (context) => const NewRoute(),
+        'tip_page': (context) {
+          return TipRoute(
+              text: ModalRoute.of(context)!.settings.arguments.toString());
+        },
+        'route_page': (context) => const RouterTestRoute(),
+      },
     );
   }
 }
@@ -112,6 +122,19 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headlineMedium,
             ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'new_page');
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(builder: (context) {
+                //     return const NewRoute();
+                //   }),
+                // );
+              },
+              child: const Text('open new route'),
+            ),
+            const Image(image: AssetImage('assets/images/background.jpg')),
           ],
         ),
       ),
@@ -120,6 +143,106 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class NewRoute extends StatelessWidget {
+  const NewRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('New route'),
+      ),
+      body: Column(
+        children: <Widget>[
+          const Text('This is new route'),
+          TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) {
+                    return const RouterTestRoute();
+                  }),
+                );
+              },
+              child: const Text('打开新页面')),
+        ],
+      ),
+    );
+  }
+}
+
+class TipRoute extends StatelessWidget {
+  const TipRoute({super.key, required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('提示'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Center(
+          child: Column(
+            children: <Widget>[
+              Text(text),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, '我是返回值'),
+                child: const Text('返回'),
+              ),
+              const RandomWordsWidget(),
+              Image.asset(
+                'assets/images/background.jpg',
+                fit: BoxFit.cover,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class RouterTestRoute extends StatelessWidget {
+  const RouterTestRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        onPressed: () async {
+          var result = await Navigator.push(context, MaterialPageRoute(
+            builder: (builder) {
+              return const TipRoute(text: '我是提示XXX');
+            },
+          ));
+          print('路由返回值： $result');
+        },
+        child: const Text('打开提示页'),
+      ),
+    );
+  }
+}
+
+class RandomWordsWidget extends StatelessWidget {
+  const RandomWordsWidget({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final wordPair = WordPair.random();
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Text(
+        wordPair.toString(),
+        selectionColor: Colors.yellow,
+        style: const TextStyle(color: Colors.blueGrey),
+      ),
     );
   }
 }
