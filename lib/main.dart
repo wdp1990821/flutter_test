@@ -1,9 +1,46 @@
+import 'dart:async';
+
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+import 'package:flutter_application_test0715/widget/widgets.dart';
 
 void main() {
-  runApp(const MyApp());
+  // debugPaintSizeEnabled = true;
+  var onError = FlutterError.onError; // 先将onerror保存起来
+  FlutterError.onError = (FlutterErrorDetails details) {
+    onError?.call(details); // 调用默认的onError
+    reportErrorAndLog(details); // 上报
+  };
+  runZoned(
+    () => runApp(const MyApp()),
+    zoneSpecification: ZoneSpecification(
+      // 拦截print
+      print: (Zone self, ZoneDelegate parent, Zone zone, String line) {
+        collectLog(line);
+        parent.print(zone, 'Interceptor: $line');
+      },
+      // 拦截未处理的异步错误
+      handleUncaughtError: (Zone self, ZoneDelegate parent, Zone zone,
+          Object error, StackTrace stackTrace) {
+        //  reportErrorAndLog(makeDetails(error, stackTrace));
+        parent.print(zone, '${error.toString()} $stackTrace');
+      },
+    ),
+  );
 }
+
+void collectLog(String line) {
+  // 收集日志方法
+}
+
+void reportErrorAndLog(FlutterErrorDetails details) {
+  // 上报错误和日志逻辑
+}
+
+// FlutterErrorDetails makeDetails(Object obj, StackTrace stack) {
+// 构建错误信息
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -41,6 +78,9 @@ class MyApp extends StatelessWidget {
               text: ModalRoute.of(context)!.settings.arguments.toString());
         },
         'route_page': (context) => const RouterTestRoute(),
+        'image_icon_page': (context) => const ImageIconRoute(),
+        'switch_checkbox_page': (context) => SwitchAndCheckBoxTestRoute(),
+        'progress_route' : (context) => ProgressRoute(),
       },
     );
   }
@@ -115,6 +155,38 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            DefaultTextStyle(
+                style: const TextStyle(color: Colors.cyan, fontSize: 20),
+                textAlign: TextAlign.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Text('Hello $_counter'),
+                    const Text('I am Jack'),
+                    const Text(
+                      "I am Jack",
+                      style: TextStyle(
+                        inherit: false, // 不继承默认样式
+                        color: Colors.grey,
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      label: const Text('Submit'),
+                      icon: const Icon(Icons.send),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: () {},
+                      label: const Text("add"),
+                      icon: const Icon(Icons.add),
+                    ),
+                    TextButton.icon(
+                      onPressed: () {},
+                      label: const Text('info'),
+                      icon: const Icon(Icons.info),
+                    ),
+                  ],
+                )),
             const Text(
               'You have clicked the button this many times:',
             ),
@@ -134,7 +206,15 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('open new route'),
             ),
-            const Image(image: AssetImage('assets/images/background.jpg')),
+            const Image(
+              image: AssetImage('assets/images/background.jpg'),
+              width: 100,
+              height: 100,
+            ),
+            Image.network(
+              'https://avatars2.githubusercontent.com/u/20411648?s=460&v=4',
+              width: 50,
+            ),
           ],
         ),
       ),
@@ -168,7 +248,7 @@ class NewRoute extends StatelessWidget {
                   }),
                 );
               },
-              child: const Text('打开新页面')),
+              child: const Text('Open New Page')),
         ],
       ),
     );
@@ -182,6 +262,10 @@ class TipRoute extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // debugger(when: text.isEmpty);
+    // print("ssss");
+    // debugPrint('1000');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('提示'),
@@ -191,15 +275,50 @@ class TipRoute extends StatelessWidget {
         child: Center(
           child: Column(
             children: <Widget>[
+              const Text(
+                'Hello world',
+                textAlign: TextAlign.left,
+              ),
+              Text(
+                'Hello world! Im Jack.' * 4,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text("Hello world",
+                  style: TextStyle(
+                      fontSize: 20,
+                      color: Colors.blue,
+                      height: 1.2,
+                      fontFamily: 'Courier',
+                      background: Paint()..color = Colors.yellow,
+                      decoration: TextDecoration.underline,
+                      decorationStyle: TextDecorationStyle.dashed)),
+              const Text.rich(TextSpan(children: [
+                TextSpan(text: "Home:"),
+                TextSpan(
+                  text: "https://flutterchina.club",
+                  style: TextStyle(
+                    color: Colors.pink,
+                  ),
+                )
+              ])),
               Text(text),
               ElevatedButton(
-                onPressed: () => Navigator.pop(context, '我是返回值'),
+                onPressed: () {
+                  // 树状态打印
+                  // debugDumpApp();
+                  // 渲染树，布局调试
+                  // debugDumpRenderTree();
+                  Navigator.pop(context, '我是返回值');
+                },
                 child: const Text('返回'),
               ),
               const RandomWordsWidget(),
               Image.asset(
                 'assets/images/background.jpg',
                 fit: BoxFit.cover,
+                width: 200,
+                height: 100,
               ),
             ],
           ),
@@ -235,13 +354,139 @@ class RandomWordsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String icons = '';
+    icons += "\uE03e";
+    icons += '\uE237';
+    icons += '\uE287';
+
     final wordPair = WordPair.random();
+
     return Padding(
-      padding: const EdgeInsets.all(8),
-      child: Text(
-        wordPair.toString(),
-        selectionColor: Colors.yellow,
-        style: const TextStyle(color: Colors.blueGrey),
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Text(
+              wordPair.toString(),
+              selectionColor: Colors.yellow,
+              style: const TextStyle(color: Colors.blueGrey),
+            ),
+            TextButton(
+              onPressed: () => Navigator.pushNamed(context, 'image_icon_page'),
+              child: const Text('ImageAndIconRoute'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, 'switch_checkbox_page');
+              },
+              child: const Text("Switch And CheckBox route"),
+            ),
+            Text(
+              icons,
+              style: const TextStyle(
+                  fontFamily: "MaterialIcons",
+                  fontSize: 24.0,
+                  color: Colors.blue),
+            ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.access_alarm,
+                  color: Colors.yellow,
+                ),
+                Icon(
+                  Icons.error,
+                  color: Colors.green,
+                ),
+                Icon(
+                  Icons.add_alert_rounded,
+                  color: Colors.deepPurple,
+                ),
+              ],
+            ),
+          ],
+        ));
+  }
+}
+
+class ImageIconRoute extends StatelessWidget {
+  const ImageIconRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    var img = const AssetImage('assets/images/background.jpg');
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Image(
+            image: img,
+            height: 50,
+            width: 100,
+            fit: BoxFit.fill,
+          ),
+          Image(
+            image: img,
+            height: 50,
+            width: 50,
+            fit: BoxFit.contain,
+          ),
+          Image(
+            image: img,
+            width: 100,
+            height: 50,
+            fit: BoxFit.cover,
+          ),
+          Image(
+            image: img,
+            width: 100.0,
+            height: 50.0,
+            fit: BoxFit.fitWidth,
+          ),
+          Image(
+            image: img,
+            width: 100.0,
+            height: 50.0,
+            fit: BoxFit.fitHeight,
+          ),
+          Image(
+            image: img,
+            width: 100.0,
+            height: 50.0,
+            fit: BoxFit.scaleDown,
+          ),
+          Image(
+            image: img,
+            height: 50.0,
+            width: 100.0,
+            fit: BoxFit.none,
+          ),
+          Image(
+            image: img,
+            width: 100.0,
+            color: Colors.blue,
+            colorBlendMode: BlendMode.difference,
+            fit: BoxFit.fill,
+          ),
+          Image(
+            image: img,
+            width: 100.0,
+            height: 200.0,
+            repeat: ImageRepeat.repeatY,
+          ),
+        ].map((e) {
+          return Row(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: SizedBox(
+                  width: 100,
+                  child: e,
+                ),
+              ),
+              Text("${e.fit}  ${e.repeat}")
+            ],
+          );
+        }).toList(),
       ),
     );
   }
