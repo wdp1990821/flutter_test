@@ -80,7 +80,9 @@ class MyApp extends StatelessWidget {
         'route_page': (context) => const RouterTestRoute(),
         'image_icon_page': (context) => const ImageIconRoute(),
         'switch_checkbox_page': (context) => SwitchAndCheckBoxTestRoute(),
-        'progress_route' : (context) => ProgressRoute(),
+        'progress_route' : (context) => const ProgressRoute(),
+        'focus_test_route' : (context) => const FocusTestRoute(),
+        'form_test_route' : (context) => const FormTestRoute(),
       },
     );
   }
