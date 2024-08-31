@@ -86,7 +86,8 @@ class MyApp extends StatelessWidget {
         'form_test_route' : (context) => const FormTestRoute(),
         'layout_builder_route' : (context) => const LayoutBuilderRoute(),
         'clip_test_route' : (context) => const ClipTestRoute(),
-        'scroll_test_route' : (context) => const ScrollTestRoute(),
+        'scaffold_test_route' : (context) => const ScaffoldRoute(),
+        'singlechildscrollview_test_route' : (context) => const SingleChildScrollViewTestRoute(),
       },
     );
   }
@@ -221,7 +222,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'https://avatars2.githubusercontent.com/u/20411648?s=460&v=4',
               width: 50,
             ),
-            ElevatedButton(onPressed: () => Navigator.pushNamed(context, 'scroll_test_route'), child: const Text('Scroll Route')),
+            ElevatedButton(onPressed: () => Navigator.pushNamed(context, 'scaffold_test_route'), child: const Text('Scroll Route')),
           ],
         ),
       ),
