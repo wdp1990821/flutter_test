@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_test0715/widget/functionview.dart';
 import 'package:flutter_application_test0715/widget/widgets.dart';
 
 import 'widget/scroll.dart';
@@ -81,26 +82,30 @@ class MyApp extends StatelessWidget {
         'route_page': (context) => const RouterTestRoute(),
         'image_icon_page': (context) => const ImageIconRoute(),
         'switch_checkbox_page': (context) => SwitchAndCheckBoxTestRoute(),
-        'progress_route' : (context) => const ProgressRoute(),
-        'focus_test_route' : (context) => const FocusTestRoute(),
-        'form_test_route' : (context) => const FormTestRoute(),
-        'layout_builder_route' : (context) => const LayoutBuilderRoute(),
-        'clip_test_route' : (context) => const ClipTestRoute(),
-        'scaffold_test_route' : (context) => const ScaffoldRoute(),
-        'singlechildscrollview_test_route' : (context) => const SingleChildScrollViewTestRoute(),
-        'infinite_listview_route' : (context) => const InfiniteListView(),
-        'scroll_controller_route' : (context) => const ScrollControllerTestRoute(),
-        'scroll_notification_route' : (context) => const ScrollNotificationRoute(),
-        'animated_list_route' : (context) => const AnimatedListRoute(),
-        'infinite_gridview_route' : (context) => const InfiniteGridView(),
-        'page_view_route' : (context) => const PageViewRoute(),
-        'keep_alive_test_route' : (context) => const KeepAliveTestRoute(),
-        'tab_view_route1' : (context) => const TabViewRoute1(),
-        'tab_view_route2' : (context) => const TabViewRoute2(),
-        'custom_scroll_view_route' : (context) => const CustomScrollViewRoute(),
-        'persistend_header_route' : (context) => const PersistentHeaderRoute(),
-        'snap_app_bar_route' : (context) => const SnapAppBar(),
-        'nested_tab_bar_view_route' : (context) => const NestedTabBarView(),
+        'progress_route': (context) => const ProgressRoute(),
+        'focus_test_route': (context) => const FocusTestRoute(),
+        'form_test_route': (context) => const FormTestRoute(),
+        'layout_builder_route': (context) => const LayoutBuilderRoute(),
+        'clip_test_route': (context) => const ClipTestRoute(),
+        'scaffold_test_route': (context) => const ScaffoldRoute(),
+        'singlechildscrollview_test_route': (context) =>
+            const SingleChildScrollViewTestRoute(),
+        'infinite_listview_route': (context) => const InfiniteListView(),
+        'scroll_controller_route': (context) =>
+            const ScrollControllerTestRoute(),
+        'scroll_notification_route': (context) =>
+            const ScrollNotificationRoute(),
+        'animated_list_route': (context) => const AnimatedListRoute(),
+        'infinite_gridview_route': (context) => const InfiniteGridView(),
+        'page_view_route': (context) => const PageViewRoute(),
+        'keep_alive_test_route': (context) => const KeepAliveTestRoute(),
+        'tab_view_route1': (context) => const TabViewRoute1(),
+        'tab_view_route2': (context) => const TabViewRoute2(),
+        'custom_scroll_view_route': (context) => const CustomScrollViewRoute(),
+        'persistend_header_route': (context) => const PersistentHeaderRoute(),
+        'snap_app_bar_route': (context) => const SnapAppBar(),
+        'nested_tab_bar_view_route': (context) => const NestedTabBarView(),
+        'function_view_route': (context) => const FunctionviewRoute(),
       },
     );
   }
@@ -235,7 +240,14 @@ class _MyHomePageState extends State<MyHomePage> {
             //   'https://avatars2.githubusercontent.com/u/20411648?s=460&v=4',
             //   width: 50,
             // ),
-            ElevatedButton(onPressed: () => Navigator.pushNamed(context, 'scaffold_test_route'), child: const Text('Scroll Route')),
+            ElevatedButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, 'scaffold_test_route'),
+                child: const Text('Scroll Route')),
+            ElevatedButton(
+                onPressed: () =>
+                    Navigator.pushNamed(context, 'function_view_route'),
+                child: const Text('Function Route')),
           ],
         ),
       ),
