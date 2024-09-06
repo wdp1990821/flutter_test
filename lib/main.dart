@@ -106,6 +106,11 @@ class MyApp extends StatelessWidget {
         'snap_app_bar_route': (context) => const SnapAppBar(),
         'nested_tab_bar_view_route': (context) => const NestedTabBarView(),
         'function_view_route': (context) => const FunctionviewRoute(),
+        'will_pop_scope_route': (context) => const WillPopScopeRoute(),
+        'inherited_widget_test_route': (context) => const InheritedWidgetTestRoute(),
+        'provider_route': (context) => const ProviderRoute(),
+        'theme_test_route': (context) => const ThemeTestRoute(),
+        'value_listenable_route': (context) => const ValueListenableRoute(),
       },
     );
   }
