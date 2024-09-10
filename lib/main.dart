@@ -107,10 +107,14 @@ class MyApp extends StatelessWidget {
         'nested_tab_bar_view_route': (context) => const NestedTabBarView(),
         'function_view_route': (context) => const FunctionviewRoute(),
         'will_pop_scope_route': (context) => const WillPopScopeRoute(),
-        'inherited_widget_test_route': (context) => const InheritedWidgetTestRoute(),
+        'inherited_widget_test_route': (context) =>
+            const InheritedWidgetTestRoute(),
         'provider_route': (context) => const ProviderRoute(),
         'theme_test_route': (context) => const ThemeTestRoute(),
         'value_listenable_route': (context) => const ValueListenableRoute(),
+        'future_builder_route': (context) => const FutureBuilderRoute(),
+        'stream_builder_route': (context) => const StreamBuilderRoute(),
+        'dialog_route': (context) => const DialogTestRoute(),
       },
     );
   }

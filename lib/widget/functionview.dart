@@ -94,18 +94,27 @@ class _FunctionviewRouteState extends State<FunctionviewRoute> {
               padding: const EdgeInsets.all(5),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '');
+                  Navigator.pushNamed(context, 'future_builder_route');
                 },
-                child: const Text(''),
+                child: const Text('Future Builder Route'),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(5),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '');
+                  Navigator.pushNamed(context, 'stream_builder_route');
                 },
-                child: const Text(''),
+                child: const Text('Stream Builder Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'dialog_route');
+                },
+                child: const Text('Dialog Route'),
               ),
             ),
           ],
@@ -533,5 +542,301 @@ class _ValueListenableState extends State<ValueListenableRoute> {
   }
 }
 
-
 // 异步UI更新（FutureBuilder、StreamBuilder）
+class FutureBuilderRoute extends StatelessWidget {
+  const FutureBuilderRoute({super.key});
+
+  Future<String> mockNetworkData() async {
+    // Future.delayed(Duration(seconds: 2), () {
+    //   return 'hi';
+    // }).then((data) {}, onError: (e) {});
+    return Future.delayed(const Duration(seconds: 2), () => '我是从互联网上获取的数据');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Center(
+        child: FutureBuilder(
+          future: mockNetworkData(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            // 请求已结束
+            if (snapshot.connectionState == ConnectionState.done) {
+              if (snapshot.hasError) {
+                return Text('Error: ${snapshot.error}');
+              } else {
+                return Text('Contents: ${snapshot.data}');
+              }
+            } else {
+              // 请求未结束，显示loading
+              return const CircularProgressIndicator();
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class StreamBuilderRoute extends StatelessWidget {
+  const StreamBuilderRoute({super.key});
+
+  // void sssss() {
+  //   Stream.fromFuture([
+  //     Future.delayed(const Duration(seconds: 1), () {
+  //       return 'Hello';
+  //     }),
+  //     Future.delayed(const Duration(seconds: 2), () {
+  //       throw AssertionError('Error');
+  //     })
+  //   ] as Future)
+  //       .listen((data) {
+  //     print('data');
+  //   }, onError: (e) {}, onDone: () {});
+  // }
+
+  Stream<int> counter() {
+    return Stream.periodic(const Duration(seconds: 1), (i) {
+      return i;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: StreamBuilder<int>(
+        stream: counter(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Text('Error ${snapshot.error}');
+          }
+          switch (snapshot.connectionState) {
+            case ConnectionState.none:
+              return const Text('没有Stream');
+            case ConnectionState.waiting:
+              return const Text('等待数据...');
+            case ConnectionState.active:
+              return Text('active: ${snapshot.data}');
+            case ConnectionState.done:
+              return const Text("Stream 已关闭");
+            default:
+              return const Text('');
+          }
+        },
+      ),
+    );
+  }
+}
+
+// 对话框详解
+class DialogTestRoute extends StatefulWidget {
+  const DialogTestRoute({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return DialogRouteState();
+  }
+}
+
+class DialogRouteState extends State<DialogTestRoute> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text("对话框")),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            onPressed: () async {
+              bool? delete = await showDeleteConfirmDialog1();
+              if (delete == null) {
+                print('取消删除');
+              } else {
+                print('已确认删除');
+              }
+            },
+            child: const Text('Alert Dialog'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              changeLanguage();
+            },
+            child: const Text('Simple Dialog'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              showListDialog();
+            },
+            child: const Text('List Dialog'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              int? type = await _showModalBottomSheet();
+              if (type != null) {
+                print(type);
+              }
+            },
+            child: const Text('Bottom Sheet Dialog'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              showLoadingDialog();
+            },
+            child: const Text('Loading Dialog'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              DateTime? date = await _showDatePicker1();
+              if (date != null) {
+                print('${date.toString()}');
+              }
+            },
+            child: const Text('DatePicker Dialog'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // AlertDialog
+  Future<bool?> showDeleteConfirmDialog1() {
+    return showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('提示'),
+            content: const SingleChildScrollView(child: Text('您确定删除当前文件吗？')),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () {
+                  // 执行删除操作
+                  Navigator.of(context).pop(true);
+                },
+                child: const Text('删除'),
+              )
+            ],
+          );
+        });
+  }
+
+  // SimpleDialog
+  Future<void> changeLanguage() async {
+    int? i = await showDialog(
+      context: context,
+      builder: (context) {
+        return SimpleDialog(
+          title: const Text('请选择语言'),
+          children: [
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 1);
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 6),
+                child: Text('简体中文'),
+              ),
+            ),
+            SimpleDialogOption(
+              onPressed: () {
+                Navigator.pop(context, 2);
+              },
+              child: const Padding(
+                padding: EdgeInsets.symmetric(vertical: 6),
+                child: Text('英文'),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+    if (i != null) {
+      print('选择了:${i == 1 ? "中文" : "英文"}');
+    }
+  }
+
+  // Dialog
+  Future<void> showListDialog() async {
+    int? index = await showDialog(
+        context: context,
+        builder: (context) {
+          var child = Column(
+            children: [
+              const ListTile(title: Text('请选择')),
+              Expanded(
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return ListTile(
+                      title: Text('$index'),
+                      onTap: () => Navigator.of(context).pop(index),
+                    );
+                  },
+                  itemCount: 30,
+                ),
+              ),
+            ],
+          );
+          return Dialog(child: child);
+        });
+    if (index != null) {
+      print('点击了：$index');
+    }
+  }
+
+  // 底部菜单列表
+  Future<int?> _showModalBottomSheet() {
+    return showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView.builder(
+          itemCount: 20,
+          itemBuilder: (context, index) {
+            return ListTile(
+              title: Text('$index'),
+              onTap: () {
+                Navigator.of(context).pop(index);
+              },
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // loading dialog
+  Future<void> showLoadingDialog() async {
+    return showDialog(
+      context: context,
+      barrierDismissible: false, //点击遮罩不关闭对话框
+      builder: (context) {
+        return const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              CircularProgressIndicator(),
+              Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Text('正在加载，请稍后...'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  // 日期选择器
+  Future<DateTime?> _showDatePicker1() {
+    var date = DateTime.now();
+    return showDatePicker(
+      context: context,
+      firstDate: date.subtract(const Duration(days: 300)),
+      lastDate: date.add(const Duration(days: 300)),
+    );
+  }
+}
+
+// 事件处理与通知
