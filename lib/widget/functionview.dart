@@ -1,5 +1,7 @@
 import 'dart:collection';
+import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 class FunctionviewRoute extends StatefulWidget {
@@ -115,6 +117,55 @@ class _FunctionviewRouteState extends State<FunctionviewRoute> {
                   Navigator.pushNamed(context, 'dialog_route');
                 },
                 child: const Text('Dialog Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'pointer_move_route');
+                },
+                child: const Text('Pointer Move Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'gesture_route');
+                },
+                child: const Text('Gesture Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  bus.emit('login', 'aaa');
+                  Navigator.pushNamed(context, 'drag_route');
+                },
+                child: const Text('Drag Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  bus.on('gesture', (arg) {
+                    print(arg);
+                  });
+                  Navigator.pushNamed(context, 'gesture_recognizer_route');
+                },
+                child: const Text('Gesture Recognizer Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'notification_route');
+                },
+                child: const Text('Notification Route'),
               ),
             ),
           ],
@@ -840,3 +891,278 @@ class DialogRouteState extends State<DialogTestRoute> {
 }
 
 // 事件处理与通知
+class PointerMoveIndicatorRoute extends StatefulWidget {
+  const PointerMoveIndicatorRoute({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _PointerMoveIndicatorState();
+  }
+}
+
+class _PointerMoveIndicatorState extends State<PointerMoveIndicatorRoute> {
+  PointerEvent? _event;
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      child: Container(
+        alignment: Alignment.center,
+        color: Colors.blue,
+        width: 300,
+        height: 150,
+        child: Text(
+          '${_event?.localPosition ?? ''}',
+          style: const TextStyle(color: Colors.white),
+        ),
+      ),
+      onPointerDown: (event) => setState(() {
+        _event = event;
+      }),
+      onPointerMove: (event) => setState(() {
+        _event = event;
+      }),
+      onPointerUp: (event) => setState(() {
+        _event = event;
+      }),
+    );
+  }
+}
+
+// 手势识别
+class GestureTestRoute extends StatefulWidget {
+  const GestureTestRoute({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _GestureTestState();
+  }
+}
+
+class _GestureTestState extends State<GestureTestRoute> {
+  String _operation = 'No Gesture detected!';
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: GestureDetector(
+        child: Container(
+          alignment: Alignment.center,
+          color: Colors.blue,
+          width: 400,
+          height: 200,
+          child: Text(_operation, style: const TextStyle(color: Colors.white)),
+        ),
+        onTap: () => updateText("Tap"), // 点击
+        onDoubleTap: () => updateText('DoubleTap'), // 双击
+        onLongPress: () => updateText('LongPress'), // 长按
+      ),
+    );
+  }
+
+  void updateText(String text) {
+    setState(() {
+      _operation = text;
+    });
+  }
+}
+
+// 拖动、滑动
+class DragTestRoute extends StatefulWidget {
+  const DragTestRoute({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _DragTestRouteState();
+  }
+}
+
+class _DragTestRouteState extends State<DragTestRoute>
+    with SingleTickerProviderStateMixin {
+  double _top = 0; //
+  double _left = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    // bus.on('login', (arg) {
+    //   print(arg);
+    // });
+    return Stack(
+      children: [
+        Positioned(
+          top: _top,
+          left: _left,
+          child: GestureDetector(
+            child: const CircleAvatar(child: Text('A')),
+            // 手指按下会的位置
+            onPanDown: (details) {
+              // 打印手指按下的位置（相对于屏幕）
+              print('用户手指按下：${details.globalPosition}');
+            },
+            // 手指滑动时会触发此回调
+            onPanUpdate: (details) {
+              // 用户手指滑动时，更新偏移，重新构建
+              setState(() {
+                _left += details.delta.dx;
+                _top += details.delta.dy;
+              });
+            },
+            onPanEnd: (details) {
+              // 滑动结束时在X/y轴上的速度
+              print(details.velocity.toString());
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class GestureRecognizerRoute extends StatefulWidget {
+  const GestureRecognizerRoute({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return _GestureRecognizerState();
+  }
+}
+
+class _GestureRecognizerState extends State<GestureRecognizerRoute> {
+  final TapGestureRecognizer _tapGestureRecognizer = TapGestureRecognizer();
+
+  bool _toggle = false; // 变色开关
+
+  @override
+  void dispose() {
+    // 用到GestureRecognizer一定要调用其dispose方法释放资源(主要是取消内部计时器)
+    _tapGestureRecognizer.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Text.rich(
+        TextSpan(
+          children: [
+            const TextSpan(text: '你好世界'),
+            TextSpan(
+              text: '点我变色',
+              style: TextStyle(
+                fontSize: 20,
+                color: _toggle ? Colors.blue : Colors.red,
+              ),
+              recognizer: _tapGestureRecognizer
+                ..onTap = () {
+                  bus.emit('gesture', 'sss');
+                  setState(() {
+                    _toggle = !_toggle;
+                  });
+                },
+            ),
+            const TextSpan(text: '你好世界'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// 事件总线
+typedef void EventCallback(arg);
+
+class EventBus {
+  // 私有构造函数
+  EventBus._internal();
+
+  // 保存单例
+  static final EventBus _singleton = EventBus._internal();
+
+  // 工厂构造函数
+  factory EventBus() => _singleton;
+
+  // 保存事件订阅者队列，key:事件名(id), value:对应事件的订阅者队列
+  final _emap = <Object, List<EventCallback>?>{};
+
+  // 添加订阅者
+  void on(eventName, EventCallback f) {
+    _emap[eventName] ??= <EventCallback>[];
+    _emap[eventName]!.add(f);
+  }
+
+  // 移除订阅者
+  void off(eventName, [EventCallback? f]) {
+    var list = _emap[eventName];
+    if (eventName == null || list == null) {
+      return;
+    }
+    if (f == null) {
+      _emap[eventName] = null;
+    } else {
+      list.remove(f);
+    }
+  }
+
+  // 触发事件，事件触发后该事件所有订阅者会被调用
+  void emit(eventName, [arg]) {
+    var list = _emap[eventName];
+    if (list == null) {
+      return;
+    }
+
+    int len = list.length - 1;
+    // 反向遍历，防止订阅者在回调中移除自身带来的下标错位
+    for (var i = len; i > -1; --i) {
+      list[i](arg);
+    }
+  }
+}
+
+var bus = EventBus();
+
+// 通知 Notification
+class NotificationRoute extends StatefulWidget {
+  const NotificationRoute({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return NotificationRouteState();
+  }
+}
+
+class NotificationRouteState extends State<NotificationRoute> {
+  String _msg = "";
+
+  @override
+  Widget build(BuildContext context) {
+    return NotificationListener<MyNotification>(
+      onNotification: (notification) {
+        setState(() {
+          _msg += "${notification.msg}  ";
+        });
+        return true;
+      },
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (context) {
+                return ElevatedButton(
+                  onPressed: () => MyNotification('Hi').dispatch(context),
+                  child: const Text('Send Notification'),
+                );
+              },
+            ),
+            Text(_msg),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class MyNotification extends Notification {
+  final String msg;
+  MyNotification(this.msg);
+}

@@ -115,6 +115,11 @@ class MyApp extends StatelessWidget {
         'future_builder_route': (context) => const FutureBuilderRoute(),
         'stream_builder_route': (context) => const StreamBuilderRoute(),
         'dialog_route': (context) => const DialogTestRoute(),
+        'pointer_move_route': (context) => const PointerMoveIndicatorRoute(),
+        'gesture_route': (context) => const GestureTestRoute(),
+        'drag_route': (context) => const DragTestRoute(),
+        'gesture_recognizer_route': (context) => const GestureRecognizerRoute(),
+        'notification_route': (context) => const NotificationRoute(),
       },
     );
   }
