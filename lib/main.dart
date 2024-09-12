@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_test0715/widget/animation.dart';
 import 'package:flutter_application_test0715/widget/functionview.dart';
 import 'package:flutter_application_test0715/widget/widgets.dart';
 
@@ -120,6 +121,7 @@ class MyApp extends StatelessWidget {
         'drag_route': (context) => const DragTestRoute(),
         'gesture_recognizer_route': (context) => const GestureRecognizerRoute(),
         'notification_route': (context) => const NotificationRoute(),
+        'animation_route': (context) => const AnimationRoute(),
       },
     );
   }
@@ -259,9 +261,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     Navigator.pushNamed(context, 'scaffold_test_route'),
                 child: const Text('Scroll Route')),
             ElevatedButton(
-                onPressed: () =>
-                    Navigator.pushNamed(context, 'function_view_route'),
-                child: const Text('Function Route')),
+              onPressed: () =>
+                  Navigator.pushNamed(context, 'function_view_route'),
+              child: const Text('Function Route'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, 'animation_route'),
+              child: const Text('Animation Route'),
+            ),
           ],
         ),
       ),
