@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_test0715/widget/animation.dart';
+import 'package:flutter_application_test0715/widget/customwidget.dart';
 import 'package:flutter_application_test0715/widget/functionview.dart';
 import 'package:flutter_application_test0715/widget/widgets.dart';
 
@@ -125,8 +126,10 @@ class MyApp extends StatelessWidget {
         'scale_animation_route': (context) => const ScaleAnimationRoute(),
         'hero_animation_route_a': (context) => const HeroAnimationRouteA(),
         'stagger_route': (context) => const StaggerRoute(),
-        'animated_switcher_counter_route': (context) => const AnimatedSwitcherCounterRoute(),
+        'animated_switcher_counter_route': (context) =>
+            const AnimatedSwitcherCounterRoute(),
         'animated_widget_route': (context) => const AnimatedWidgetTest(),
+        'custom_widget_route': (context) => const CustomWidgetRoute(),
       },
     );
   }
@@ -273,6 +276,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, 'animation_route'),
               child: const Text('Animation Route'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, 'custom_widget_route'),
+              child: const Text('Custom Widget Route'),
             ),
           ],
         ),

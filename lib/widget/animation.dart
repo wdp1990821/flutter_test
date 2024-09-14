@@ -17,7 +17,7 @@ class _AnimationRouteState extends State<AnimationRoute> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('功能型组件'),
+        title: const Text('动画组件'),
         backgroundColor: Colors.blue,
         centerTitle: true,
         actions: [
@@ -88,24 +88,6 @@ class _AnimationRouteState extends State<AnimationRoute> {
                   Navigator.pushNamed(context, 'animated_widget_route');
                 },
                 child: const Text('Animated Wiget Route'),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '');
-                },
-                child: const Text(''),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '');
-                },
-                child: const Text(''),
               ),
             ),
           ],
@@ -641,5 +623,3 @@ class _AnimatedWidgetTestState extends State<AnimatedWidgetTest> {
     );
   }
 }
-
-
