@@ -122,6 +122,11 @@ class MyApp extends StatelessWidget {
         'gesture_recognizer_route': (context) => const GestureRecognizerRoute(),
         'notification_route': (context) => const NotificationRoute(),
         'animation_route': (context) => const AnimationRoute(),
+        'scale_animation_route': (context) => const ScaleAnimationRoute(),
+        'hero_animation_route_a': (context) => const HeroAnimationRouteA(),
+        'stagger_route': (context) => const StaggerRoute(),
+        'animated_switcher_counter_route': (context) => const AnimatedSwitcherCounterRoute(),
+        'animated_widget_route': (context) => const AnimatedWidgetTest(),
       },
     );
   }
