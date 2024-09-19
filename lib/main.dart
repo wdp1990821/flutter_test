@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_test0715/widget/animation.dart';
 import 'package:flutter_application_test0715/widget/customwidget.dart';
 import 'package:flutter_application_test0715/widget/functionview.dart';
+import 'package:flutter_application_test0715/widget/network.dart';
 import 'package:flutter_application_test0715/widget/widgets.dart';
 
 import 'widget/scroll.dart';
@@ -134,6 +135,7 @@ class MyApp extends StatelessWidget {
         'turn_box_route': (context) => const TurnBoxRoute(),
         'custom_paint_route': (context) => const CustomPaintRoute(),
         'circular_progress_route': (context) => const GradientCircularProgressRoute(),
+        'net_work_route': (context) => const NetworkRoute(),
       },
     );
   }
@@ -284,6 +286,10 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               onPressed: () => Navigator.pushNamed(context, 'custom_widget_route'),
               child: const Text('Custom Widget Route'),
+            ),
+            ElevatedButton(
+              onPressed: () => Navigator.pushNamed(context, 'net_work_route'),
+              child: const Text('Net Work Route'),
             ),
           ],
         ),
