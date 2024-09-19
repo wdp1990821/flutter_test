@@ -130,6 +130,10 @@ class MyApp extends StatelessWidget {
             const AnimatedSwitcherCounterRoute(),
         'animated_widget_route': (context) => const AnimatedWidgetTest(),
         'custom_widget_route': (context) => const CustomWidgetRoute(),
+        'gradient_button_route': (context) => const GradientButtonRoute(),
+        'turn_box_route': (context) => const TurnBoxRoute(),
+        'custom_paint_route': (context) => const CustomPaintRoute(),
+        'circular_progress_route': (context) => const GradientCircularProgressRoute(),
       },
     );
   }
