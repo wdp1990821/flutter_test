@@ -134,8 +134,12 @@ class MyApp extends StatelessWidget {
         'gradient_button_route': (context) => const GradientButtonRoute(),
         'turn_box_route': (context) => const TurnBoxRoute(),
         'custom_paint_route': (context) => const CustomPaintRoute(),
-        'circular_progress_route': (context) => const GradientCircularProgressRoute(),
+        'circular_progress_route': (context) =>
+            const GradientCircularProgressRoute(),
         'net_work_route': (context) => const NetworkRoute(),
+        'file_operation_route': (context) => const FileOperationRoute(),
+        'shared_preferences_route': (context) => const SharedPreferencesDemo(),
+        'http_test_route': (context) => const HttpTestRoute(),
       },
     );
   }
@@ -284,7 +288,8 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Animation Route'),
             ),
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, 'custom_widget_route'),
+              onPressed: () =>
+                  Navigator.pushNamed(context, 'custom_widget_route'),
               child: const Text('Custom Widget Route'),
             ),
             ElevatedButton(
