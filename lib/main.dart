@@ -140,6 +140,7 @@ class MyApp extends StatelessWidget {
         'file_operation_route': (context) => const FileOperationRoute(),
         'shared_preferences_route': (context) => const SharedPreferencesDemo(),
         'http_test_route': (context) => const HttpTestRoute(),
+        'future_builder_route1': (context) => const FutureBuilderRoute1(),
       },
     );
   }

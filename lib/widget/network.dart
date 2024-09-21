@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_test0715/widget/functionview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
@@ -74,6 +75,24 @@ class _NetworkRouteState extends State<NetworkRoute> {
                   Navigator.pushNamed(context, 'http_test_route');
                 },
                 child: const Text('Http Test Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, 'future_builder_route1');
+                },
+                child: const Text('Future Builder Route'),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, '');
+                },
+                child: const Text(''),
               ),
             ),
             Padding(
@@ -340,3 +359,44 @@ class HttpTestRouteState extends State<HttpTestRoute> {
 }
 
 // Http请求库-dio
+class FutureBuilderRoute1 extends StatefulWidget {
+  const FutureBuilderRoute1({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return FutureBuilderRouteState();
+  }
+}
+
+class FutureBuilderRouteState extends State<FutureBuilderRoute1> {
+  Dio dio = Dio();
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Container(
+        alignment: Alignment.center,
+        child: FutureBuilder(
+          future: dio.get('https://api.github.com/orgs/flutterchina/repos'),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            //请求完成
+            if (snapshot.connectionState == ConnectionState.done) {
+              Response response = snapshot.data;
+              //发生错误
+              if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              // 请求成功，通过项目信息构建用于显示项目名称的ListView
+              return ListView(
+                children: response.data
+                    .map<Widget>((e) => ListTile(title: Text(e['full_name'])))
+                    .toList(),
+              );
+            }
+            return const CircularProgressIndicator();
+          },
+        ),
+      ),
+    );
+  }
+}
