@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_test0715/widget/functionview.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class NetworkRoute extends StatefulWidget {
   const NetworkRoute({super.key});
@@ -90,27 +90,18 @@ class _NetworkRouteState extends State<NetworkRoute> {
               padding: const EdgeInsets.all(5),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '');
+                  Navigator.pushNamed(context, 'web_socket_route');
                 },
-                child: const Text(''),
+                child: const Text('WebSocket Route'),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(5),
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, '');
+                  Navigator.pushNamed(context, 'socket_route');
                 },
-                child: const Text(''),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(5),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '');
-                },
-                child: const Text(''),
+                child: const Text('Socket Route'),
               ),
             ),
             Padding(
@@ -400,3 +391,197 @@ class FutureBuilderRouteState extends State<FutureBuilderRoute1> {
     );
   }
 }
+
+Future downloadWithChunks(
+  url,
+  savePath, {
+  required ProgressCallback onReceiveProgress,
+}) async {
+  const firstChunkSize = 102;
+  const maxChunk = 3;
+
+  int total = 0;
+  var dio = Dio();
+  var progress = <int>[];
+
+  createCallback(no) {
+    return (int received, _) {
+      progress[no] = received;
+      if (onReceiveProgress != null && total != 0) {
+        onReceiveProgress(progress.reduce((a, b) => a + b), total);
+      }
+    };
+  }
+
+  Future<Response> downloadWithChunk(url, start, end, no) async {
+    progress.add(0);
+    --end;
+    return dio.download(
+      url,
+      savePath + "temp$no",
+      onReceiveProgress: createCallback(no),
+      options: Options(
+        headers: {"ragne": "bytes=$start -$end"},
+      ),
+    );
+  }
+
+  Future mergeTempFiles(chunk) async {
+    File f = File(savePath + "temp0");
+    IOSink ioSink = f.openWrite(mode: FileMode.writeOnlyAppend);
+    for (int i = 1; i < chunk; ++i) {
+      File _f = File(savePath + "temp$i");
+      await ioSink.addStream(_f.openRead());
+      await _f.delete();
+    }
+
+    await ioSink.close();
+    await f.rename(savePath);
+  }
+
+  Response response = await downloadWithChunk(url, 0, firstChunkSize, 0);
+  if (response.statusCode == 206) {
+    total = int.parse(response.headers
+        .value(HttpHeaders.contentRangeHeader)!
+        .split("/")
+        .last);
+    int reserved = total -
+        int.parse(
+            response.headers.value(HttpHeaders.contentLengthHeader).toString());
+    int chunk = (reserved / firstChunkSize).ceil() + 1;
+
+    if (chunk > 1) {
+      int chunkSize = firstChunkSize;
+      if (chunk > maxChunk + 1) {
+        chunk = maxChunk + 1;
+        chunkSize = (reserved / maxChunk).ceil();
+      }
+
+      var futures = <Future>[];
+      for (int i = 0; i < maxChunk; ++i) {
+        int start = firstChunkSize + i * chunkSize;
+        futures.add(downloadWithChunk(url, start, start + chunkSize, i + 1));
+      }
+      await Future.wait(futures);
+    }
+
+    await mergeTempFiles(chunk);
+  }
+}
+
+// void main(List<String> args) async {
+//   var url = "http://download.dcloud.nat.cn/HBuilder.9.0.2.macosx_64.dmg";
+//   var savePath = "./example/HBuilder.9.0.2.macosx_64.dmg";
+
+//   await downloadWithChunks(url, savePath, onReceiveProgress: (received, total) {
+//     if (total != -1) {
+//       print('${(received / total * 100).floor()}%');
+//     }
+//   });
+// }
+
+// 使用WebSockets
+class WebSocketRoute extends StatefulWidget {
+  const WebSocketRoute({super.key});
+
+  @override
+  State<StatefulWidget> createState() {
+    return WebSocketRouteState();
+  }
+}
+
+class WebSocketRouteState extends State<WebSocketRoute> {
+  final TextEditingController _controller = TextEditingController();
+  final channel =
+      WebSocketChannel.connect(Uri.parse('wss://echo.websocket.events'));
+
+  String _text = "";
+
+  @override
+  void dispose() {
+    channel.sink.close();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('WebSocket(内容回显)'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Form(
+              child: TextFormField(
+                controller: _controller,
+                decoration: const InputDecoration(labelText: 'Send a messa'),
+              ),
+            ),
+            StreamBuilder(
+                stream: channel.stream,
+                builder: (context, snapshot) {
+                  // 网络不通会走到这里
+                  if (snapshot.hasError) {
+                    _text = '网络不通...';
+                  } else if (snapshot.hasData) {
+                    _text = "echo: ${snapshot.data}";
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    child: Text(_text),
+                  );
+                }),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _sendMessage,
+        tooltip: 'Send Message',
+        child: const Icon(Icons.send),
+      ),
+    );
+  }
+
+  void _sendMessage() {
+    if (_controller.text.isNotEmpty) {
+      channel.sink.add(_controller.text);
+    }
+  }
+}
+
+// 使用Socket API
+class SocketRoute extends StatelessWidget {
+  const SocketRoute({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _request(),
+      builder: (context, snapShot) {
+        return Text(snapShot.data.toString());
+      },
+    );
+  }
+
+  _request() async {
+    // 建立连接
+    var socket = await Socket.connect('baidu.com', 80);
+    // 根据Http协议，发起Get请求头
+    socket.writeln("GET / HTTP/1.1");
+    socket.writeln("Host:baidu.com");
+    socket.writeln("Connection:close");
+    socket.writeln();
+    await socket.flush(); //发送
+    //读取返回内容，按照utf8解码为字符串
+    String _response = await utf8.decoder.bind(socket).join();
+    await socket.close();
+    return _response;
+  }
+}
+
+
+// JSON转Dart Model类

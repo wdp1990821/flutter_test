@@ -141,6 +141,8 @@ class MyApp extends StatelessWidget {
         'shared_preferences_route': (context) => const SharedPreferencesDemo(),
         'http_test_route': (context) => const HttpTestRoute(),
         'future_builder_route1': (context) => const FutureBuilderRoute1(),
+        'web_socket_route': (context) => const WebSocketRoute(),
+        'socket_route': (context) => const SocketRoute(),
       },
     );
   }
