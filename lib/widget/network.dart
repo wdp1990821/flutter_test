@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_json_mapper/dart_json_mapper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_test0715/bean/dart_json_mapper_demo.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:dio/dio.dart';
@@ -562,7 +564,7 @@ class SocketRoute extends StatelessWidget {
     return FutureBuilder(
       future: _request(),
       builder: (context, snapShot) {
-        return Text(snapShot.data.toString());
+        return Text(snapShot.data.toString() + Localizations.localeOf(context).languageCode);
       },
     );
   }
@@ -583,5 +585,4 @@ class SocketRoute extends StatelessWidget {
   }
 }
 
-
-// JSON转Dart Model类
+// 国际化
